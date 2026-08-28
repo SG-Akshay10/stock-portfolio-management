@@ -1,0 +1,224 @@
+/* ====================================================
+   Dashboard module CSS
+==================================================== */
+
+.wrapper {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 4rem;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+  flex-wrap: wrap;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #e2e8f0;
+  letter-spacing: -0.03em;
+  margin-bottom: 0.25rem;
+}
+
+.subtitle {
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+.email {
+  color: #818cf8;
+  font-weight: 500;
+}
+
+/* ---- Section ---- */
+.section {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 12px;
+  padding: 1.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.sectionTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #e2e8f0;
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.badge {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.2rem 0.6rem;
+  background: rgba(99, 102, 241, 0.15);
+  color: #818cf8;
+  border-radius: 999px;
+  letter-spacing: 0.02em;
+}
+
+/* ---- Session Card ---- */
+.sessionCard {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.sessionRow {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 6px;
+}
+
+.sessionKey {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  min-width: 70px;
+}
+
+.sessionVal {
+  font-size: 0.85rem;
+  color: #a5b4fc;
+  font-family: "Fira Code", "Cascadia Code", monospace;
+  word-break: break-all;
+}
+
+/* ---- Create Form ---- */
+.createForm {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+.createForm .input {
+  flex: 1;
+  min-width: 160px;
+}
+
+/* ---- List ---- */
+.listHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.refreshBtn {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #64748b;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  padding: 0.3rem 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: color 0.2s, background 0.2s;
+}
+
+.refreshBtn:hover {
+  color: #e2e8f0;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.loading {
+  text-align: center;
+  color: #475569;
+  padding: 2rem 0;
+  font-size: 0.9rem;
+}
+
+.empty {
+  text-align: center;
+  color: #475569;
+  padding: 2rem 0;
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
+.itemList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.itemCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  transition: background 0.15s;
+}
+
+.itemCard:hover {
+  background: rgba(255, 255, 255, 0.055);
+}
+
+.itemInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.itemTitle {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #e2e8f0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.itemDesc {
+  font-size: 0.82rem;
+  color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.itemDate {
+  font-size: 0.75rem;
+  color: #334155;
+}
+
+.deleteBtn {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid rgba(248, 113, 113, 0.2);
+  border-radius: 6px;
+  color: #64748b;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.deleteBtn:hover {
+  background: rgba(248, 113, 113, 0.12);
+  color: #f87171;
+  border-color: rgba(248, 113, 113, 0.4);
+}
