@@ -16,21 +16,47 @@ MODEL_NAME = "sarvam-105b"
 
 SYSTEM_PROMPT = """You are an expert Indian financial market news analyst.
 Analyze the provided corporate filing or news item for a listed Indian company (NSE/BSE).
-Classify its category, materiality score, directional sentiment, and write a 2-4 sentence plain-language explanation of what happened and why it matters for stock investors.
+Classify its category, materiality score, directional sentiment, and write a concise 2-3 sentence max (30-50 words) plain-language summary of what happened and why it matters for stock investors.
 
-You must output strictly valid JSON with no markdown wrapping. Example output format:
+CRITICAL INSTRUCTION: Respond ONLY with a single valid JSON object. Do NOT include any introductory text, reasoning monologue, chain-of-thought, or text outside the JSON.
+
+Example output format:
 {
   "category": "Quarterly Results",
   "materiality": "high",
   "sentiment": "positive",
-  "summary": "Eternal Ltd reported a strong 45% YoY surge in Q1 net profit to Rs 850 crore. The earnings beat driven by expanding operational margins is likely to boost investor sentiment and drive positive stock price movement."
+  "summary": "Eternal Ltd reported a strong 45% YoY surge in Q1 net profit to Rs 850 crore. Operational margin expansion is likely to support positive stock price momentum."
 }
 
 Allowed Values:
 - category: MUST be one of ["Quarterly Results", "Guidance Cut", "Regulatory/Legal", "Management Change", "Dividend/Bonus", "M&A", "Credit Rating", "Board Meeting", "General News"]
 - materiality: MUST be one of ["high", "medium", "low"]
 - sentiment: MUST be one of ["positive", "negative", "neutral", "unclear"]
+- summary: MUST be a concise 2 to 3 sentence maximum summary explaining key facts and investor impact.
 """
+
+
+def is_reasoning_monologue(text: str) -> bool:
+    """Checks if text contains raw LLM chain-of-thought monologue or prompt echoes."""
+    lowered = text.lower()
+    patterns = [
+        "the user wants",
+        "let me parse",
+        "detailed content:",
+        "title/headline:",
+        "company symbol:",
+        "analyze the provided",
+        "wait, this seems to be",
+        "this is a live market report",
+    ]
+    return any(p in lowered for p in patterns)
+
+
+def sanitize_summary(summary_text: str, title: str, symbol: str) -> str:
+    """Sanitizes summary string to prevent internal reasoning leakages."""
+    if not summary_text or is_reasoning_monologue(summary_text):
+        return f"{title}. Market intelligence report concerning {symbol}."
+    return summary_text.strip()
 
 
 def classify_and_summarize(symbol: str, title: str, content: str = "") -> Dict[str, Any]:
@@ -61,7 +87,6 @@ def classify_and_summarize(symbol: str, title: str, content: str = "") -> Dict[s
     }
 
     try:
-        # Match the verified standalone connection call in backend/llm.py.
         response = httpx.post(SARVAM_ENDPOINT, headers=headers, json=payload, timeout=30.0)
         response.raise_for_status()
         data = response.json()
@@ -84,30 +109,36 @@ def classify_and_summarize(symbol: str, title: str, content: str = "") -> Dict[s
 
         clean_text = content_raw.replace("```json", "").replace("```", "").strip()
 
-        # Extract JSON object using raw_decode to ignore any extra trailing text/markdown.
-        # The API can occasionally return a plain-text answer even when instructed to
-        # emit JSON; retain that answer instead of failing the entire ingestion job.
+        parsed = None
         try:
-            if "{" in clean_text:
+            if "{" in clean_text and "}" in clean_text:
+                start_idx = clean_text.find("{")
+                end_idx = clean_text.rfind("}") + 1
+                json_str = clean_text[start_idx:end_idx]
+                parsed = json.loads(json_str)
+            elif "{" in clean_text:
                 start_idx = clean_text.find("{")
                 decoder = json.JSONDecoder()
                 parsed, _ = decoder.raw_decode(clean_text[start_idx:])
             else:
                 parsed = json.loads(clean_text)
-        except json.JSONDecodeError:
-            logger.warning("Sarvam returned non-JSON content; using a neutral fallback.")
+        except Exception:
+            logger.warning("Sarvam returned non-JSON content; using neutral fallback.")
             return {
                 "category": "General News",
                 "materiality": "medium",
                 "sentiment": "neutral",
-                "summary": clean_text or title,
+                "summary": sanitize_summary("", title, symbol),
             }
+
+        raw_summary = parsed.get("summary", "")
+        final_summary = sanitize_summary(raw_summary, title, symbol)
 
         return {
             "category": parsed.get("category", "General News"),
             "materiality": str(parsed.get("materiality", "medium")).lower(),
             "sentiment": str(parsed.get("sentiment", "neutral")).lower(),
-            "summary": parsed.get("summary", title)
+            "summary": final_summary
         }
     except Exception as e:
         logger.error(f"Sarvam API request failed: {e}")

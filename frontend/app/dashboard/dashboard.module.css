@@ -501,6 +501,9 @@
   margin-bottom: 0.75rem;
   text-decoration: none;
   display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .newsTitle:hover {
@@ -533,6 +536,28 @@
   color: #e2e8f0;
   line-height: 1.5;
   margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.readMoreLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--accent-primary, #818cf8);
+  text-decoration: none;
+  margin-top: 0.5rem;
+  transition: color 0.15s ease;
+}
+
+.readMoreLink:hover {
+  color: var(--accent-primary-hover, #a5b4fc);
+  text-decoration: underline;
 }
 
 .newsFooter {

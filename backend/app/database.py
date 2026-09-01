@@ -3,7 +3,7 @@ import sqlite3
 import json
 import logging
 from typing import List, Dict, Any, Optional
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 from supabase import create_client, Client
 from dotenv import load_dotenv
 
@@ -258,6 +258,7 @@ class DatabaseManager:
         materiality: Optional[str] = None,
         sentiment: Optional[str] = None,
         search_query: Optional[str] = None,
+        max_days: Optional[int] = 3,
         limit: int = 50,
         offset: int = 0
     ) -> List[Dict[str, Any]]:
@@ -267,6 +268,11 @@ class DatabaseManager:
 
         sql = "SELECT * FROM news_items WHERE 1=1"
         params = []
+
+        if max_days is not None:
+            cutoff_iso = (datetime.now(timezone.utc) - timedelta(days=max_days)).isoformat()
+            sql += " AND published_at >= ?"
+            params.append(cutoff_iso)
 
         if symbols:
             upper_symbols = [s.upper() for s in symbols]
@@ -311,14 +317,22 @@ class DatabaseManager:
         return [dict(r) for r in rows]
 
     @staticmethod
-    def get_news_by_symbol(symbol: str) -> List[Dict[str, Any]]:
+    def get_news_by_symbol(symbol: str, max_days: Optional[int] = 3) -> List[Dict[str, Any]]:
         conn = get_sqlite_conn()
         cursor = conn.cursor()
-        cursor.execute("""
-            SELECT * FROM news_items 
-            WHERE symbol = ? 
-            ORDER BY published_at DESC
-        """, (symbol.upper(),))
+        if max_days is not None:
+            cutoff_iso = (datetime.now(timezone.utc) - timedelta(days=max_days)).isoformat()
+            cursor.execute("""
+                SELECT * FROM news_items 
+                WHERE symbol = ? AND published_at >= ?
+                ORDER BY published_at DESC
+            """, (symbol.upper(), cutoff_iso))
+        else:
+            cursor.execute("""
+                SELECT * FROM news_items 
+                WHERE symbol = ? 
+                ORDER BY published_at DESC
+            """, (symbol.upper(),))
         rows = cursor.fetchall()
         conn.close()
         return [dict(r) for r in rows]

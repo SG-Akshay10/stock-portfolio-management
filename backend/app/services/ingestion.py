@@ -77,24 +77,42 @@ SAMPLE_FILINGS = {
     ]
 }
 
+import email.utils
+from datetime import datetime, timezone, timedelta
+
 def fetch_rss_news(symbol: str) -> List[Dict[str, Any]]:
     """
-    Fetches real news items via Google News RSS search for a given stock symbol.
+    Fetches real news items via Google News RSS search for a given stock symbol published within the last 3 days.
     """
     items = []
-    rss_url = f"https://news.google.com/rss/search?q={symbol}+stock+BSE+NSE&hl=en-IN&gl=IN&ceid=IN:en"
+    rss_url = f"https://news.google.com/rss/search?q={symbol}+stock+when:3d&hl=en-IN&gl=IN&ceid=IN:en"
+    cutoff = datetime.now(timezone.utc) - timedelta(days=3)
     
     try:
         with httpx.Client(timeout=8.0) as client:
             resp = client.get(rss_url)
             if resp.status_code == 200:
                 root = ET.fromstring(resp.content)
-                for entry in root.findall("./channel/item")[:5]:
+                for entry in root.findall("./channel/item")[:10]:
                     title_elem = entry.find("title")
                     link_elem = entry.find("link")
                     pubdate_elem = entry.find("pubDate")
                     
                     if title_elem is not None and title_elem.text:
+                        pub_dt = None
+                        if pubdate_elem is not None and pubdate_elem.text:
+                            try:
+                                pub_dt = email.utils.parsedate_to_datetime(pubdate_elem.text)
+                            except Exception:
+                                pub_dt = None
+
+                        if not pub_dt:
+                            pub_dt = datetime.now(timezone.utc)
+
+                        # Strict check: ignore items older than 3 days
+                        if pub_dt < cutoff:
+                            continue
+
                         title_text = title_elem.text.rsplit(" - ", 1)[0]
                         source_text = title_elem.text.rsplit(" - ", 1)[1] if " - " in title_elem.text else "Market News"
                         
@@ -104,7 +122,7 @@ def fetch_rss_news(symbol: str) -> List[Dict[str, Any]]:
                             "source": source_text,
                             "url": link_elem.text if link_elem is not None else f"https://news.google.com",
                             "content": f"Live market report concerning {symbol} listing.",
-                            "published_at": datetime.utcnow().isoformat() + "Z"
+                            "published_at": pub_dt.astimezone(timezone.utc).isoformat()
                         })
     except Exception as e:
         logger.info(f"RSS fetch for {symbol} returned notice ({e})")
@@ -125,7 +143,7 @@ def ingest_for_symbols(symbols: List[str]) -> List[Dict[str, Any]]:
     for sym in set(symbols):
         sym_upper = sym.upper()
 
-        # 1. Fetch real RSS news
+        # 1. Fetch real RSS news (last 3 days)
         rss_items = fetch_rss_news(sym_upper)
         raw_items.extend(rss_items)
 
@@ -138,7 +156,7 @@ def ingest_for_symbols(symbols: List[str]) -> List[Dict[str, Any]]:
                     "source": sf["source"],
                     "url": sf["url"],
                     "content": sf["content"],
-                    "published_at": datetime.utcnow().isoformat() + "Z"
+                    "published_at": datetime.now(timezone.utc).isoformat()
                 })
         elif not rss_items:
             # Fallback sample filing for unlisted test symbols
@@ -148,7 +166,7 @@ def ingest_for_symbols(symbols: List[str]) -> List[Dict[str, Any]]:
                 "source": "NSE Corporate Filings",
                 "url": f"https://www.nseindia.com/companies-listing/corporate-filings-announcements?symbol={sym_upper}",
                 "content": f"Corporate announcement regarding business updates for {sym_upper}.",
-                "published_at": datetime.utcnow().isoformat() + "Z"
+                "published_at": datetime.now(timezone.utc).isoformat()
             })
 
     # Process and classify items

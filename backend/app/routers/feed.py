@@ -20,6 +20,7 @@ def get_feed(
     materiality: Optional[str] = Query(None, description="Filter by materiality level (high, medium, low)"),
     sentiment: Optional[str] = Query(None, description="Filter by directional sentiment (positive, negative, neutral, unclear)"),
     q: Optional[str] = Query(None, description="Search query string"),
+    days: int = Query(3, ge=1, le=30, description="Filter news within last N days"),
     limit: int = Query(50, ge=1, le=200),
     offset: int = Query(0, ge=0),
     user: dict = Depends(get_current_user)
@@ -40,6 +41,7 @@ def get_feed(
         materiality=materiality,
         sentiment=sentiment,
         search_query=q,
+        max_days=days,
         limit=limit,
         offset=offset
     )
@@ -53,6 +55,7 @@ def get_feed(
             materiality=materiality,
             sentiment=sentiment,
             search_query=q,
+            max_days=days,
             limit=limit,
             offset=offset
         )
@@ -70,12 +73,12 @@ def get_stock_timeline(symbol: str, user: dict = Depends(get_current_user)):
     """
     user_id = get_user_id(user)
     sym_clean = symbol.strip().upper()
-    timeline = DatabaseManager.get_news_by_symbol(sym_clean)
+    timeline = DatabaseManager.get_news_by_symbol(sym_clean, max_days=3)
 
     if not timeline:
         ingested = ingest_for_symbols([sym_clean])
         evaluate_and_dispatch_alerts(user_id, ingested)
-        timeline = DatabaseManager.get_news_by_symbol(sym_clean)
+        timeline = DatabaseManager.get_news_by_symbol(sym_clean, max_days=3)
 
     return {
         "symbol": sym_clean,

@@ -548,15 +548,26 @@ export default function DashboardPage() {
                   href={item.url}
                   target="_blank"
                   rel="noopener noreferrer"
+                  title={item.title}
                 >
                   {item.title}
                 </a>
 
                 <div className={styles.aiExplanationBox}>
                   <div className={styles.aiHeader}>
-                    <span>Summary</span>
+                    <span>AI Summary</span>
                   </div>
                   <p className={styles.aiSummaryText}>{item.summary}</p>
+                  {item.url && item.url !== "#" && (
+                    <a
+                      href={item.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={styles.readMoreLink}
+                    >
+                      Read full document &rarr;
+                    </a>
+                  )}
                 </div>
 
                 <div className={styles.newsFooter}>
