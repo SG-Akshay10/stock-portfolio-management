@@ -30,3 +30,9 @@ Thumbs.db
 *.swp
 implemented.md
 prd.md
+
+
+# SQLite Databases
+*.db
+*.sqlite3
+backend/data/*.db
