@@ -10,7 +10,7 @@ export default function Navbar() {
   return (
     <nav className={styles.nav}>
       <Link href="/" className={styles.brand}>
-        ⚡ FullStack Starter
+        Portfolio Intelligence
       </Link>
       <div className={styles.links}>
         {status === "authenticated" ? (

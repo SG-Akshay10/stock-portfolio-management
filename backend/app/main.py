@@ -2,20 +2,21 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
-from app.routers import items
+from app.routers import items, holdings, feed, alerts
 
 load_dotenv()
 
 app = FastAPI(
-    title="Stock Portfolio API",
-    description="FastAPI backend for the full-stack starter demo.",
-    version="0.1.0",
+    title="Portfolio News Intelligence API",
+    description="FastAPI backend for tracking price-material stock news and Sarvam AI summaries.",
+    version="1.0.0",
 )
 
 # ---- CORS ----
-# Allow the Next.js dev server (and production URL) to reach this API.
 origins = [
     os.getenv("FRONTEND_URL", "http://localhost:3000"),
+    "http://localhost:3000",
+    "http://127.0.0.1:3000"
 ]
 
 app.add_middleware(
@@ -27,11 +28,13 @@ app.add_middleware(
 )
 
 # ---- Routers ----
+app.include_router(holdings.router)
+app.include_router(feed.router)
+app.include_router(alerts.router)
 app.include_router(items.router)
-
 
 # ---- Public routes ----
 @app.get("/health", tags=["health"])
 def health_check():
-    """Public health-check endpoint — no auth required."""
-    return {"status": "ok", "service": "FastAPI Backend"}
+    """Public health-check endpoint."""
+    return {"status": "ok", "service": "Portfolio Intelligence API"}

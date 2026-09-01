@@ -8,9 +8,8 @@
   justify-content: space-between;
   padding: 0 2rem;
   height: 64px;
-  background: rgba(10, 10, 15, 0.85);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: #0f172a;
+  border-bottom: 1px solid #263244;
   position: sticky;
   top: 0;
   z-index: 100;
@@ -66,7 +65,7 @@
   text-decoration: none;
   padding: 0.4rem 1rem;
   border-radius: 6px;
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  background: #2563eb;
   transition: opacity 0.2s, transform 0.1s;
 }
 

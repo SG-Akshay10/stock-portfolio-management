@@ -4,7 +4,7 @@ import SessionProvider from "@/components/SessionProvider";
 import Navbar from "@/components/Navbar";
 
 export const metadata: Metadata = {
-  title: "FullStack Starter — Next.js + FastAPI + Supabase",
+  title: "Portfolio Intelligence",
   description:
     "A minimal full-stack demo with Next.js, NextAuth, FastAPI, and Supabase Postgres.",
 };

@@ -13,32 +13,10 @@
 }
 
 /* Decorative background blobs */
-.orb1 {
-  position: absolute;
-  top: -10%;
-  left: -5%;
-  width: 500px;
-  height: 500px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.18) 0%, transparent 70%);
-  pointer-events: none;
-}
-
-.orb2 {
-  position: absolute;
-  bottom: -10%;
-  right: -5%;
-  width: 600px;
-  height: 600px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(139, 92, 246, 0.14) 0%, transparent 70%);
-  pointer-events: none;
-}
-
 .content {
   position: relative;
   text-align: center;
-  max-width: 700px;
+  max-width: 640px;
 }
 
 .eyebrow {
@@ -46,19 +24,16 @@
 }
 
 .title {
-  font-size: clamp(2.5rem, 6vw, 4rem);
-  font-weight: 800;
-  letter-spacing: -0.04em;
-  line-height: 1.15;
+  font-size: clamp(2.25rem, 5vw, 3.5rem);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1.12;
   color: #e2e8f0;
   margin-bottom: 1.25rem;
 }
 
 .gradient {
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a78bfa 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #e2e8f0;
 }
 
 .subtitle {
@@ -80,7 +55,7 @@
 .btnPrimary {
   display: inline-block;
   padding: 0.8rem 2rem;
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  background: #2563eb;
   color: #fff;
   font-size: 1rem;
   font-weight: 600;
