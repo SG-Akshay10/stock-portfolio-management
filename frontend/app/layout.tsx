@@ -4,9 +4,9 @@ import SessionProvider from "@/components/SessionProvider";
 import Navbar from "@/components/Navbar";
 
 export const metadata: Metadata = {
-  title: "Portfolio Intelligence",
+  title: "Portfolio Intelligence | Your market brief",
   description:
-    "A minimal full-stack demo with Next.js, NextAuth, FastAPI, and Supabase Postgres.",
+    "A calm, focused place to follow the news that matters to your holdings.",
 };
 
 export default function RootLayout({
