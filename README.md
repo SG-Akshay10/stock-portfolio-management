@@ -1,6 +1,6 @@
 # Full-Stack Starter
 
-> **Next.js 14 · NextAuth v5 · FastAPI · Supabase Postgres**
+> **Next.js 16 · NextAuth v5 · FastAPI · Supabase Postgres**
 
 A minimal but complete full-stack demo app demonstrating how to wire together a Next.js frontend with credential-based authentication (NextAuth), a Python FastAPI backend, and a shared Supabase Postgres database.
 
