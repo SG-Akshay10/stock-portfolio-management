@@ -33,12 +33,6 @@ def get_holdings(user: dict = Depends(get_current_user)):
     user_id = get_user_id(user)
     holdings = DatabaseManager.get_holdings(user_id)
 
-    # Pre-seed popular benchmark holdings if user has no holdings yet
-    if not holdings:
-        for default_stock in DEFAULT_POPULAR_STOCKS:
-            DatabaseManager.add_holding(user_id, default_stock)
-        holdings = DatabaseManager.get_holdings(user_id)
-
     return holdings
 
 @router.post("", status_code=status.HTTP_201_CREATED)

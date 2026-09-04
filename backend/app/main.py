@@ -2,7 +2,7 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
-from app.routers import items, holdings, feed, alerts
+from app.routers import items, holdings, feed, alerts, analysis
 
 load_dotenv()
 
@@ -32,6 +32,7 @@ app.include_router(holdings.router)
 app.include_router(feed.router)
 app.include_router(alerts.router)
 app.include_router(items.router)
+app.include_router(analysis.router)
 
 # ---- Public routes ----
 @app.get("/health", tags=["health"])
