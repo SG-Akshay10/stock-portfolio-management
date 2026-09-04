@@ -207,12 +207,12 @@ class DatabaseManager:
             source = item.get("source", "Market Feed")
             url = item.get("url", "#")
             content = item.get("content", "")
-            published_at = item.get("published_at") or datetime.utcnow().isoformat() + "Z"
+            published_at = item.get("published_at") or datetime.now(timezone.utc).isoformat()
             category = item.get("category", "General News")
             materiality = item.get("materiality", "medium").lower()
             sentiment = item.get("sentiment", "neutral").lower()
             summary = item.get("summary", "")
-            processed_at = datetime.utcnow().isoformat() + "Z"
+            processed_at = datetime.now(timezone.utc).isoformat()
             dedup_hash = item.get("dedup_hash") or f"{symbol}_{hash(title)}"
 
             record = {
