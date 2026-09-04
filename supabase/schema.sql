@@ -88,9 +88,6 @@ CREATE TABLE IF NOT EXISTS user_alerts_sent (
 
 CREATE INDEX IF NOT EXISTS idx_user_alerts_sent_user ON user_alerts_sent (user_id);
 
--- Disable RLS since backend uses SUPABASE_SERVICE_ROLE_KEY
-ALTER TABLE app_users DISABLE ROW LEVEL SECURITY;
-ALTER TABLE holdings DISABLE ROW LEVEL SECURITY;
-ALTER TABLE news_items DISABLE ROW LEVEL SECURITY;
-ALTER TABLE user_alert_settings DISABLE ROW LEVEL SECURITY;
-ALTER TABLE user_alerts_sent DISABLE ROW LEVEL SECURITY;
+-- RLS note: for production, prefer enabling RLS and creating policies per table.
+-- The service_role key bypasses RLS automatically, so it does not require disabling RLS here.
+-- (Intentionally leaving out ALTER TABLE ... DISABLE ROW LEVEL SECURITY statements.)
