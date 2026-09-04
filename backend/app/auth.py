@@ -6,7 +6,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-AUTH_SECRET = os.environ["AUTH_SECRET"]
+AUTH_SECRET = os.getenv("AUTH_SECRET")
+if not AUTH_SECRET:
+    raise RuntimeError("AUTH_SECRET is not set. Add AUTH_SECRET to backend/.env.")
 
 security = HTTPBearer()
 
