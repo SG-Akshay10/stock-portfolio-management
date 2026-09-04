@@ -78,8 +78,7 @@ SAMPLE_FILINGS = {
 }
 
 import email.utils
-from datetime import datetime, timezone, timedelta
-
+from datetime import timezone, timedelta
 def fetch_rss_news(symbol: str) -> List[Dict[str, Any]]:
     """
     Fetches real news items via Google News RSS search for a given stock symbol published within the last 3 days.
