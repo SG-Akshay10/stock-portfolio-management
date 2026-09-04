@@ -102,8 +102,7 @@ stock-portfolio-management/
 
 1. Open your Supabase project → **SQL Editor**
 2. Paste and run the contents of [`supabase/schema.sql`](./supabase/schema.sql)
-3. This creates the `app_users` and `items` tables
-
+3. This creates the `app_users`, `items`, `holdings`, `news_items`, `user_alert_settings`, and `user_alerts_sent` tables
 ### 2. Frontend
 
 ```bash
