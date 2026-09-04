@@ -18,7 +18,42 @@ export default function DashboardPage() {
   // Initial portfolio hydration is an intentional external-data sync.
   // eslint-disable-next-line react-hooks/set-state-in-effect, react-hooks/exhaustive-deps
   useEffect(() => { load(); }, []);
-  async function addManual(event: React.FormEvent) { event.preventDefault(); setBusy("adding"); const auth = await token(); const response = await fetch(`${API_URL}/api/holdings/manual`, { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${auth}` }, body: JSON.stringify({ symbol, quantity: Number(quantity), buy_price: Number(buyPrice) }) }); if (response.ok) { setSymbol(""); setQuantity(""); setBuyPrice(""); setMessage("Holding added. Select Analyze when you’re ready."); await load(); } else setMessage("Please enter a valid symbol, quantity, and average price."); setBusy(""); }
+  async function addManual(event: React.FormEvent) {
+    event.preventDefault();
+    setBusy("adding");
+    setMessage("");
+
+    const auth = await token();
+    if (!auth) {
+      setMessage("Your session has expired. Please sign in again.");
+      setBusy("");
+      return;
+    }
+
+    const response = await fetch(`${API_URL}/api/holdings/manual`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${auth}`,
+      },
+      body: JSON.stringify({
+        symbol,
+        quantity: Number(quantity),
+        buy_price: Number(buyPrice),
+      }),
+    });
+
+    if (response.ok) {
+      setSymbol("");
+      setQuantity("");
+      setBuyPrice("");
+      setMessage("Holding added. Select Analyze when you’re ready.");
+      await load();
+    } else {
+      setMessage("Please enter a valid symbol, quantity, and average price.");
+    }
+    setBusy("");
+  }
   async function importFile() { if (!file) return; setBusy("importing"); const auth = await token(); const body = new FormData(); body.append("file", file); const response = await fetch(`${API_URL}/api/holdings/import`, { method: "POST", headers: { Authorization: `Bearer ${auth}` }, body }); const data = await response.json(); setMessage(response.ok ? `${data.count} equity holdings imported.` : data.detail || "Import failed."); if (response.ok) { setFile(null); await load(); } setBusy(""); }
   async function analyze(holding: Holding) { setBusy(holding.id); setMessage(""); const auth = await token(); const response = await fetch(`${API_URL}/api/analysis/${holding.id}`, { headers: { Authorization: `Bearer ${auth}` } }); if (response.ok) { const result = await response.json(); setAnalysis((current) => ({ ...current, [holding.id]: result })); } else setMessage("Analysis could not be completed. Please try again."); setBusy(""); }
   async function remove(id: string) { const auth = await token(); await fetch(`${API_URL}/api/holdings/${id}`, { method: "DELETE", headers: { Authorization: `Bearer ${auth}` } }); setHoldings((items) => items.filter((item) => item.id !== id)); setAnalysis((items) => { const next = { ...items }; delete next[id]; return next; }); }
