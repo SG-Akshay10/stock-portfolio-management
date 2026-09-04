@@ -13,9 +13,20 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 CREATE INDEX IF NOT EXISTS idx_app_users_email ON app_users (email);
 
--- 2. holdings table
+-- 2. items table
+-- Simple demo table used by backend/app/routers/items.py
+CREATE TABLE IF NOT EXISTS items (
+  id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id     UUID NOT NULL REFERENCES app_users(id) ON DELETE CASCADE,
+  title       TEXT NOT NULL,
+  description TEXT,
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_items_user_id ON items (user_id);
+
+-- 3. holdings table
 -- Tracks user stock portfolio holdings (NSE/BSE listed equities)
-CREATE TABLE IF NOT EXISTS holdings (
   id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id      UUID NOT NULL REFERENCES app_users(id) ON DELETE CASCADE,
   symbol       TEXT NOT NULL,          -- e.g., RELIANCE, TCS, INFY, HDFCBANK
