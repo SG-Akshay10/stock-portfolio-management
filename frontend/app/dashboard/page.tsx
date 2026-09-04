@@ -56,7 +56,30 @@ export default function DashboardPage() {
   }
   async function importFile() { if (!file) return; setBusy("importing"); const auth = await token(); const body = new FormData(); body.append("file", file); const response = await fetch(`${API_URL}/api/holdings/import`, { method: "POST", headers: { Authorization: `Bearer ${auth}` }, body }); const data = await response.json(); setMessage(response.ok ? `${data.count} equity holdings imported.` : data.detail || "Import failed."); if (response.ok) { setFile(null); await load(); } setBusy(""); }
   async function analyze(holding: Holding) { setBusy(holding.id); setMessage(""); const auth = await token(); const response = await fetch(`${API_URL}/api/analysis/${holding.id}`, { headers: { Authorization: `Bearer ${auth}` } }); if (response.ok) { const result = await response.json(); setAnalysis((current) => ({ ...current, [holding.id]: result })); } else setMessage("Analysis could not be completed. Please try again."); setBusy(""); }
-  async function remove(id: string) { const auth = await token(); await fetch(`${API_URL}/api/holdings/${id}`, { method: "DELETE", headers: { Authorization: `Bearer ${auth}` } }); setHoldings((items) => items.filter((item) => item.id !== id)); setAnalysis((items) => { const next = { ...items }; delete next[id]; return next; }); }
+  async function remove(id: string) {
+    const auth = await token();
+    if (!auth) {
+      setMessage("Your session has expired. Please sign in again.");
+      return;
+    }
+
+    const response = await fetch(`${API_URL}/api/holdings/${id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${auth}` },
+    });
+
+    if (!response.ok) {
+      setMessage("Could not remove holding. Please try again.");
+      return;
+    }
+
+    setHoldings((items) => items.filter((item) => item.id !== id));
+    setAnalysis((items) => {
+      const next = { ...items };
+      delete next[id];
+      return next;
+    });
+  }
   const money = (value?: number) => value == null ? "—" : `₹${value.toLocaleString("en-IN", { maximumFractionDigits: 2 })}`;
   return <div className={styles.wrapper}>
     <div className={styles.disclaimerBanner}>Insights only · Prices may be delayed · This tool never recommends buying or selling.</div>
