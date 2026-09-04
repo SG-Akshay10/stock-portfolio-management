@@ -2,9 +2,9 @@
 -- Stock Portfolio Management - Supabase Schema (PRD Specification)
 -- ============================================================
 
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
 -- 1. app_users table
-CREATE TABLE IF NOT EXISTS app_users (
-  id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   email       TEXT UNIQUE NOT NULL,
   password    TEXT NOT NULL,   -- bcrypt hashed
   name        TEXT,
